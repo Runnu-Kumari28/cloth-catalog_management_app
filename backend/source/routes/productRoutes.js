@@ -15,7 +15,17 @@ router.get('/products', async (req, res) => {
   try {
     const products = await Product.aggregate([
       { $match: query },
-      { $group: { _id: '$option_code', items: { $push: '$$ROOT' } } },
+      { $group: { 
+        _id: '$option_code', 
+        items: { $push: '$$ROOT' },
+        count: { $sum: 1 }
+      } },
+      { $project: {
+        option_code: '$_id',
+        items: 1,
+        count: 1,
+        _id: 0
+      }}
     ]);
     res.json(products);
   } catch (error) {
