@@ -12,7 +12,7 @@ const productSchema = new mongoose.Schema({
     }, 
     Sleeve: {
         type: String,
-        enum: ['Full Sleeve', 'Half sleeve', 'Sleeveless'],
+        enum: ['Full Sleeve', 'Half Sleeve', 'Sleeveless'],
         required: true
     }
 }); 

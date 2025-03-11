@@ -6,14 +6,26 @@ const router = Router();
 router.get('/products/filters', async (req, res) => {
   try {
     const filters = {
-      style_code: await Product.distinct('style_code'),
-      option_code: await Product.distinct('option_code'),
-      MRP: await Product.distinct('MRP'),
-      Brick: await Product.distinct('Brick'),
-      Sleeve: await Product.distinct('Sleeve'),
-      option_code_count: await Product.aggregate([
-        { $group: { _id: '$option_code', count: { $sum: 1 } } },
+      style_code: await Product.aggregate([
+        { $group: { _id: '$style_code', option_codes: { $addToSet: '$option_code' } } },
+        { $project: { value: '$_id', count: { $size: '$option_codes' }, _id: 0 } }
       ]),
+      option_code: await Product.aggregate([
+        { $group: { _id: '$option_code', count: { $sum: 1 } } },
+        { $project: { value: '$_id', count: '$count', _id: 0 } }
+      ]),
+      MRP: await Product.aggregate([
+        { $group: { _id: '$MRP', option_codes: { $addToSet: '$option_code' } } },
+        { $project: { value: '$_id', count: { $size: '$option_codes' }, _id: 0 } }
+      ]),
+      Brick: await Product.aggregate([
+        { $group: { _id: '$Brick', option_codes: { $addToSet: '$option_code' } } },
+        { $project: { value: '$_id', count: { $size: '$option_codes' }, _id: 0 } }
+      ]),
+      Sleeve: await Product.aggregate([
+        { $group: { _id: '$Sleeve', option_codes: { $addToSet: '$option_code' } } },
+        { $project: { value: '$_id', count: { $size: '$option_codes' }, _id: 0 } }
+      ])
     };
     res.json(filters);
   } catch (error) {
